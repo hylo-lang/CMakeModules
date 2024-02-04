@@ -30,9 +30,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Dependencies
 #
 
-find_package(dispatch CONFIG)
-find_package(Foundation CONFIG)
-find_package(XCTest CONFIG)
 include(FetchContent)
 
 set(_XCTESTDISCOVERY_SAVED_BUILD_TESTING ${BUILD_TESTING})
