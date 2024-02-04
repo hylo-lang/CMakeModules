@@ -132,6 +132,7 @@ struct XCTestDiscovery: ParsableCommand {
           XCTMain(allTestCases)
         #endif
       }
+      runAllTestCases()
       """
 
     try output.write(to: main, atomically: true, encoding: .utf8)
