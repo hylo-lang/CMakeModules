@@ -1,4 +1,4 @@
-# mkdir -p .cmake-build && cd .cmake-build && cmake -GNinja -S .. && cmake --build .
+# mkdir -p .cmake-build && cd .cmake-build && cmake -DENABLE_TESTING=1 -GNinja -S .. && cmake --build . && ctest -V .
 
 cmake_minimum_required(VERSION 3.16)
 
@@ -83,8 +83,10 @@ target_link_libraries(generate-xctest-main
 # Needed where @main is used.
 target_compile_options(generate-xctest-main PRIVATE -parse-as-library)
 
-include(${PROJECT_SOURCE_DIR}/cmake/SwiftXCTestCTestBridge.cmake)
-add_library(DummyTestee STATIC ${PROJECT_SOURCE_DIR}/Tests/Dummy.swift)
-target_compile_options(DummyTestee PRIVATE -enable-testing)
+if(ENABLE_TESTING)
+  include(${PROJECT_SOURCE_DIR}/cmake/SwiftXCTestCTestBridge.cmake)
+  add_library(DummyTestee STATIC ${PROJECT_SOURCE_DIR}/Tests/Dummy.swift)
+  target_compile_options(DummyTestee PRIVATE -enable-testing)
 
-add_swift_xctest(XCTestBridgeTests DummyTestee ${PROJECT_SOURCE_DIR}/Tests/Tests.swift)
+  add_swift_xctest(XCTestBridgeTests DummyTestee ${PROJECT_SOURCE_DIR}/Tests/Tests.swift)
+endif()
