@@ -17,6 +17,7 @@ if(POLICY CMP0157)
 endif()
 
 project(SwiftPM LANGUAGES C Swift)
+enable_testing()
 
 set(CMAKE_Swift_LANGUAGE_VERSION 5)
 set(CMAKE_Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift)
@@ -81,3 +82,9 @@ target_link_libraries(generate-xctest-main
 )
 # Needed where @main is used.
 target_compile_options(generate-xctest-main PRIVATE -parse-as-library)
+
+include(${PROJECT_SOURCE_DIR}/cmake/SwiftXCTestCTestBridge.cmake)
+add_library(DummyTestee STATIC ${PROJECT_SOURCE_DIR}/Tests/Dummy.swift)
+target_compile_options(DummyTestee PRIVATE -enable-testing)
+
+add_swift_xctest(XCTestBridgeTests DummyTestee ${PROJECT_SOURCE_DIR}/Tests/Tests.swift)

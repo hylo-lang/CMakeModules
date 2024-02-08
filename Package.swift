@@ -26,5 +26,7 @@ let package = Package(
         .product(name: "SwiftParserDiagnostics", package: "swift-syntax"),
       ]
     ),
+
+    .testTarget(name: "Tests", dependencies: ["generate-xctest-main"], path: "Tests")
   ]
 )
