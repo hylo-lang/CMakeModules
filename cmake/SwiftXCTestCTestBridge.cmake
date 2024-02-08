@@ -47,19 +47,19 @@ function(add_swift_xctest test_target testee)
 
     find_package(XCTest CONFIG QUIET)
 
-    set(test_main ${PROJECT_BINARY_DIR}/${test_target}-TestMain/main.swift)
+    set(test_main ${PROJECT_BINARY_DIR}/${test_target}-test_main/main.swift)
     add_custom_command(
-      OUTPUT ${testMain}
+      OUTPUT ${test_main}
       COMMAND generate-xctest-main -o ${test_main} ${sources}
       DEPENDS ${sources} generate-xctest-main
       COMMENT "Generate runner for test target ${test_target}")
 
-    add_executable(${name} ${test_main} ${sources})
+    add_executable(${test_target} ${test_main} ${sources})
 
-    target_link_libraries(${name} PRIVATE ${testee} XCTest ${dependencies})
+    target_link_libraries(${test_target} PRIVATE ${testee} XCTest ${dependencies})
 
-    add_test(NAME ${name}
-      COMMAND ${name})
+    add_test(NAME ${test_target}
+      COMMAND ${test_target})
 
   endif()
 

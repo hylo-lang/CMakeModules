@@ -1,6 +1,6 @@
-# mkdir -p .cmake-build && cd .cmake-build && cmake -DENABLE_TESTING=1 -GNinja -S .. && cmake --build . && ctest -V .
+# mkdir -p .cmake-build && ( cd .cmake-build && cmake -DENABLE_TESTING=1 -GNinja -S .. && cmake --build . && ctest -V . )
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.26)
 
 if(POLICY CMP0077)
   cmake_policy(SET CMP0077 NEW)
