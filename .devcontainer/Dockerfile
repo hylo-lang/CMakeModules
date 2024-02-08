@@ -37,25 +37,3 @@ RUN apt install -y cmake
 # devcontainer.json).  Now that we have cmake installed we can drop it.
 RUN apt-add-repository --remove "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
 
-# Install zstd from source.  There is no -dev package available in
-# this ubuntu's repository.  We could also put it in the build via
-# https://github.com/facebook/zstd/blob/dev/build/cmake/README.md#how-to-use-it-with-cmake-fetchcontent
-# which would reduce installation prerequisites for Linux users, but
-# would slow down clean builds.
-
-RUN wget https://github.com/facebook/zstd/archive/refs/tags/v1.5.5.tar.gz -O zstd-1.5.5.tar.gz
-RUN tar xzf zstd-1.5.5.tar.gz
-RUN mkdir .zstd-build
-RUN cmake -Wno-dev -GNinja -S /zstd-1.5.5/build/cmake -B .zstd-build -DZSTD_BUILD_SHARED=1 -DZSTD_BUILD_STATIC=1
-RUN cmake --build .zstd-build
-RUN cmake --install .zstd-build
-
-#
-# Install LLVM
-#
-
-RUN wget https://apt.llvm.org/llvm.sh
-RUN chmod +x llvm.sh
-RUN ./llvm.sh 17
-
-RUN ln -s /usr/bin/llvm-config-17 /usr/bin/llvm-config
