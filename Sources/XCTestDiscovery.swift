@@ -101,11 +101,13 @@ struct XCTestDiscovery: ParsableCommand {
             // Skip any methods scraped from non-XCTestCase types.
             return (testCaseClass: XCTestCase.self, allTests: [])
           }
-          return (
-            testCaseClass: t,
-            allTests: self.map { name_f in
-              (name_f.0, { (x: XCTestCase) throws in try name_f.1(x as! T)() })
-          })
+
+          func xcTestCaseClosure(_ f: @escaping (T) -> () throws -> Void) -> XCTestCaseClosure {
+            { (x: XCTestCase) throws -> Void in try f(x as! T)() }
+          }
+
+          let allTests = self.map { name_f in (name_f.0, xcTestCaseClosure(name_f.1)) }
+          return (testCaseClass: t, allTests: allTests)
         }
 
       }
