@@ -19,7 +19,13 @@ if(APPLE)
   set_target_properties(XCTest PROPERTIES
     IMPORTED_LOCATION ${platform_developer}/usr/lib/libXCTestSwiftSupport.dylib)
 else()
-  find_package(XCTest CONFIG QUIET)
+  add_library(XCTest SHARED IMPORTED)
+  target_include_directories(XCTest INTERFACE "C:/Users/dave/AppData/Local/Programs/Swift/Platforms/0.0.0/Windows.platform/Developer/Library/XCTest-development/usr/lib/swift/windows/")
+  set_target_properties(XCTest PROPERTIES
+    IMPORTED_IMPLIB "C:/Users/dave/AppData/Local/Programs/Swift/Platforms/0.0.0/Windows.platform/Developer/Library/XCTest-development/usr/lib/swift/windows/aarch64/XCTest.lib"
+    IMPORTED_LOCATION C:/Users/dave/AppData/Local/Programs/Swift/Platforms/0.0.0/Windows.platform/Developer/Library/XCTest-development/usr/bin64a/XCTest.dll
+  )
+
 endif()
 
 # add_swift_xctest(
