@@ -19,36 +19,38 @@ if(APPLE)
   set_target_properties(XCTest PROPERTIES
     IMPORTED_LOCATION ${platform_developer}/usr/lib/libXCTestSwiftSupport.dylib)
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-  add_library(XCTest SHARED IMPORTED)
 
-  # let SDKROOT = environment["SDKROOT"], let sdkroot = try? AbsolutePath(validating: SDKROOT)
+  add_library(XCTest SHARED IMPORTED)
+  #
+  # Logic lifted from https://github.com/apple/swift-package-manager/blob/e10ff906c/Sources/PackageModel/UserToolchain.swift#L361-L447 with thanks to @compnerd.
+  #
   cmake_path(CONVERT $ENV{SDKROOT} TO_CMAKE_PATH_LIST sdkroot NORMALIZE)
   if(${sdkroot} MATCHES ".*/$") # CMake is nutty about trailing slashes; strip any that are there.
     cmake_path(GET sdkroot PARENT_PATH sdkroot)
   endif()
 
-  # let platform = sdkroot.parentDirectory.parentDirectory.parentDirectory
   cmake_path(GET sdkroot PARENT_PATH platform)
   cmake_path(GET platform PARENT_PATH platform)
   cmake_path(GET platform PARENT_PATH platform)
 
-  # @compnerd TEMPORARY; read from the platform info.plist
-  set(xctestVersion development)
-  # @compnerd TEMPORARY, derive from CMAKE_SYSTEM_PROCESSOR
-  set(archName aarch64)
-  # compnerd TEMPORARY, derive from CMAKE_SYSTEM_PROCESSOR
-  set(archBin bin64a)
+  # Crude XML parsing to find the xctest version
+  file(READ ${platform}/Info.plist plistXML)
+  string(REGEX REPLACE ".*<key>XCTEST_VERSION</key>[ \t\r\n]*<string>([^<]+)</string>.*" "\\1" xctestVersion "${plistXML}")
 
-  # let installation: AbsolutePath =
-  #     platform.appending("Developer")
-  #         .appending("Library")
-  #         .appending("XCTest-\(info.defaults.xctestVersion)")
+  if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "ARM64")
+    set(archName aarch64)
+    set(archBin bin64a)
+  elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "AMD64|IA64|EM64T|x64")
+    set(archName x86_64)
+    set(archBin bin64)
+  else()
+    set(archName i686)
+    set(archBin bin32)
+  endif()
+
   cmake_path(APPEND platform Developer Library XCTest-${xctestVersion} OUTPUT_VARIABLE installation)
 
-  # "-I",
-  # AbsolutePath(validating: "usr/lib/swift/windows", relativeTo: installation).pathString,
-  target_include_directories(XCTest INTERFACE
-    "${installation}/usr/lib/swift/windows")
+  target_include_directories(XCTest INTERFACE "${installation}/usr/lib/swift/windows")
 
   # Migration Path
   #
@@ -56,15 +58,6 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
   # directory.  This was in order to match the SDK setup.  However, the toolchain finally gained the
   # ability to consult the architecture independent directory for Swift modules, allowing the merged
   # swiftmodules.  XCTest followed suit.
-  #
-  # "-I",
-  # AbsolutePath(
-  #     validating: "usr/lib/swift/windows/\(triple.archName)",
-  #     relativeTo: installation
-  # ).pathString,
-  # "-L",
-  # AbsolutePath(validating: "usr/lib/swift/windows/\(triple.archName)", relativeTo: installation)
-  #     .pathString,
   target_include_directories(XCTest INTERFACE
     "${installation}/usr/lib/swift/windows/${archName}"
   )
