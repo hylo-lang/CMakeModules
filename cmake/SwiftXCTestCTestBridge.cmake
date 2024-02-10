@@ -156,7 +156,7 @@ function(add_swift_xctest test_target testee)
       get_target_property(xctest_dll_path XCTest IMPORTED_LOCATION)
       cmake_path(GET xctest_dll_path PARENT_PATH xctest_dll_directory)
       cmake_path(NATIVE_PATH xctest_dll_directory xctest_dll_directory)
-      set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "${xctest_dll_directory};PATH=$ENV{PATH}" )
+      set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "PATH=${xctest_dll_directory};$ENV{PATH}" )
     endif()
 
   endif()
