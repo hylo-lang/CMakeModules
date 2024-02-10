@@ -1,4 +1,5 @@
 if(APPLE)
+
   include(FindXCTest)
   add_library(XCTest SHARED IMPORTED)
 
@@ -18,6 +19,7 @@ if(APPLE)
   target_include_directories(XCTest INTERFACE ${platform_developer}/usr/lib/)
   set_target_properties(XCTest PROPERTIES
     IMPORTED_LOCATION ${platform_developer}/usr/lib/libXCTestSwiftSupport.dylib)
+
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 
   add_library(XCTest SHARED IMPORTED)
@@ -55,9 +57,7 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
   # Migration Path
   #
   # Older Swift (<=5.7) installations placed the XCTest Swift module into the architecture specified
-  # directory.  This was in order to match the SDK setup.  However, the toolchain finally gained the
-  # ability to consult the architecture independent directory for Swift modules, allowing the merged
-  # swiftmodules.  XCTest followed suit.
+  # directory in order to match the SDK setup.
   target_include_directories(XCTest INTERFACE
     "${installation}/usr/lib/swift/windows/${archName}"
   )
@@ -76,37 +76,33 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 
   # Migration Path
   #
-  # In order to support multiple parallel installations of an SDK, we need to ensure that we can
-  # have all the architecture variant libraries available.  Prior to this getting enabled (~5.7), we
-  # always had a singular installed SDK.  Prefer the new variant which has an architecture
-  # subdirectory in `bin` if available.
-  #
-  # let implib = try AbsolutePath(
-  #     validating: "usr/lib/swift/windows/XCTest.lib",
-  #     relativeTo: installation
-  # )
+  # Before multiple parallel SDK installations were supported (~5.7), we always had a singular
+  # installed SDK.  Add it as a fallback if it exists.
   set(implib "${installation}/usr/lib/swift/windows/XCTest.lib")
-  # if localFileSystem.exists(implib) {
-  #   xctest.append(contentsOf: ["-L", implib.parentDirectory.pathString])
-  # }
   if(EXISTS ${implib})
     cmake_path(GET implib PARENT_PATH p)
     target_link_directories(XCTest INTERFACE ${p})
   endif()
 
 else()
+
   # I'm not sure this has any effect
   find_package(XCTest CONFIG QUIET)
+
 endif()
 
 # add_swift_xctest(
-#   <NAME>
-#   <SWIFT_SOURCE> ...
-#   DEPENDENCIES <Target> ...
+#   <name> <testee>
+#   <swift_source> ...
+#   DEPENDENCIES <target> ...
 # )
 #
-# Creates a CTest test target named <NAME> that runs the tests in the given
+# Creates a CTest test target named `<name>`, testing `<testee>`, that runs the tests in the given
 # Swift source files.
+#
+# On Apple platforms, `<testee>` must be a target type supported by `xctest_add_bundle` (officially,
+# Frameworks and App Bundles, although static modules seem to work also).  On other platforms
+# `<testee>` can be any target type that works as a dependency in `target_link_libraries`.
 function(add_swift_xctest test_target testee)
 
   cmake_parse_arguments(ARG "" "" "DEPENDENCIES" ${ARGN})
@@ -148,7 +144,7 @@ function(add_swift_xctest test_target testee)
       # https://stackoverflow.com/a/59866840/125349, this is not the last place the list will be
       # used (and interpreted by CMake). [It] is then used to populate CTestTestfile.cmake, which is
       # later read by CTest to setup your test environment.
-      list(JOIN path "\\;" testPath)
+      list(JOIN path "\\$<SEMICOLON>" testPath)
       set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "PATH=${testPath}")
     endif()
 
