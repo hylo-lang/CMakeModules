@@ -156,7 +156,14 @@ function(add_swift_xctest test_target testee)
       get_target_property(xctest_dll_path XCTest IMPORTED_LOCATION)
       cmake_path(GET xctest_dll_path PARENT_PATH xctest_dll_directory)
       cmake_path(NATIVE_PATH xctest_dll_directory xctest_dll_directory)
-      set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "PATH=${xctest_dll_directory};$ENV{PATH}" )
+      set(path $ENV{PATH})
+      list(PREPEND path "${xctest_dll_directory}")
+      # Escape the semicolons when forming the environment setting.  As explained in
+      # https://stackoverflow.com/a/59866840/125349, this is not the last place the list will be
+      # used (and interpreted by CMake). [It] is then used to populate CTestTestfile.cmake, which is
+      # later read by CTest to setup your test environment.
+      list(JOIN path "\\;" testPath)
+      set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "PATH=${testPath}")
     endif()
 
   endif()
