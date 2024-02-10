@@ -129,7 +129,6 @@ function(add_swift_xctest test_target testee)
 
   if(APPLE)
 
-    message("sources= ${sources}")
     xctest_add_bundle(${test_target} ${testee} ${sources})
     target_link_libraries(${test_target} PRIVATE XCTest ${dependencies})
     xctest_add_test(XCTest.${test_target} ${test_target})
@@ -155,7 +154,6 @@ function(add_swift_xctest test_target testee)
     # Attempt to make sure ctest can find the XCTest DLL.
     if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
       get_target_property(xctest_dll_path XCTest IMPORTED_LOCATION)
-      message(XCTest DLL: ${xctest_dll_path})
       cmake_path(GET xctest_dll_path PARENT_PATH xctest_dll_directory)
       cmake_path(NATIVE_PATH xctest_dll_directory xctest_dll_directory)
       set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "${xctest_dll_directory};PATH=$ENV{PATH}" )
