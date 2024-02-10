@@ -27,9 +27,6 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     cmake_path(GET sdkroot PARENT_PATH sdkroot)
   endif()
 
-  # compnerd TEMPORARY; read from SDKSettings.plist
-  set(runtime -libc MD)
-
   # let platform = sdkroot.parentDirectory.parentDirectory.parentDirectory
   cmake_path(GET sdkroot PARENT_PATH platform)
   cmake_path(GET platform PARENT_PATH platform)
@@ -103,10 +100,6 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     cmake_path(GET implib PARENT_PATH p)
     target_link_directories(XCTest INTERFACE ${p})
   endif()
-
-  # @compnerd Which one(s)  of these two do I really need?
-  target_compile_options(XCTest INTERFACE -sdk ${sdkroot} ${runtime})
-  target_link_options(XCTest INTERFACE -sdk ${sdkroot} ${runtime})
 
 else()
   # I'm not sure this has any effect
