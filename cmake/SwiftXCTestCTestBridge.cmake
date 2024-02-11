@@ -144,7 +144,7 @@ function(add_swift_xctest test_target testee)
       # https://stackoverflow.com/a/59866840/125349, this is not the last place the list will be
       # used (and interpreted by CMake). [It] is then used to populate CTestTestfile.cmake, which is
       # later read by CTest to setup your test environment.
-      list(JOIN path "\\$<SEMICOLON>" testPath)
+      list(JOIN path "\\;" testPath)
       set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "PATH=${testPath}")
     endif()
 
