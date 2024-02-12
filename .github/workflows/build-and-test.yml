@@ -30,11 +30,15 @@ jobs:
 
       - name: Xcode
         if: ${{ matrix.os == 'macos-latest' }}
-        uses: actions/setup-swift@v2
         run: |
           cmake -DENABLE_TESTING=1 -GXcode -S . -B .xcode-build
           cd .xcode-build
           xcrun xcodebuild -configuration ${{ matrix.configuration }} -scheme XCTestDiscovery -destination 'platform=macOS' test
+
+      - name: Setup Swift
+        uses: actions/setup-swift@v2
+        with:
+          version: 5.9
 
       - name: Native CTest
         run: ${{ env.BUILD_AND_TEST }}
