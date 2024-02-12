@@ -28,12 +28,12 @@ jobs:
         with:
           runCmd: ${{ env.BUILD_AND_TEST }}
 
-      - name: Xcode
+      - name: Xcode (build only—"error: Scheme DummyTestee is not currently configured for the test action.")
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           cmake -DENABLE_TESTING=1 -GXcode -S . -B .xcode-build
           cd .xcode-build
-          xcrun xcodebuild -configuration ${{ matrix.configuration }} -scheme XCTestDiscovery -destination 'platform=macOS' test
+          xcrun xcodebuild -configuration ${{ matrix.configuration }} -scheme DummyTestee -destination 'platform=macOS' build-for-testing
 
       - name: Setup Swift
         uses: SwiftyLab/setup-swift@latest
