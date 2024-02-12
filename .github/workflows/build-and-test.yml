@@ -36,9 +36,9 @@ jobs:
           xcrun xcodebuild -configuration ${{ matrix.configuration }} -scheme XCTestDiscovery -destination 'platform=macOS' test
 
       - name: Setup Swift
-        uses: actions/setup-swift@v2
+        uses: SwiftyLab/setup-swift@latest
         with:
-          version: 5.9
+          swift-version: 5.9
 
       - name: Native CTest
         run: ${{ env.BUILD_AND_TEST }}
