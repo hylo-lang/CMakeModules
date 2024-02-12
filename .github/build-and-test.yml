@@ -1,0 +1,42 @@
+---
+name: Build and test
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        configuration: [Debug, Release]
+
+    env: 
+      BUILD_AND_TEST: cmake -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DENABLE_TESTING=1 -GNinja -S . -B .cmake-build && cmake --build .cmake-build && ctest -V --test-dir .cmake-build
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Devcontainer CTest
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: devcontainers/ci@v0.3
+        with:
+          runCmd: ${{ env.BUILD_AND_TEST }}
+
+      - name: Xcode
+        if: ${{ matrix.os == 'macos-latest' }}
+        uses: actions/setup-swift@v2
+        run: |
+          cmake -DENABLE_TESTING=1 -GXcode -S . -B .xcode-build
+          cd .xcode-build
+          xcrun xcodebuild -configuration ${{ matrix.configuration }} -scheme XCTestDiscovery -destination 'platform=macOS' test
+
+      - name: Native CTest
+        run: ${{ env.BUILD_AND_TEST }}
