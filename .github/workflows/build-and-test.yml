@@ -1,0 +1,47 @@
+---
+name: Build and test
+
+"on":
+  push:
+    branches: ["**"]
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        configuration: [Debug, Release]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Setup Swift
+        if: ${{ matrix.os != 'macos-latest' }}
+        uses: SwiftyLab/setup-swift@latest
+        with:
+          swift-version: 5.9
+
+      - uses: seanmiddleditch/gha-setup-ninja@v4
+        with:
+          version: 1.11.1
+
+      - name: Native CTest
+        run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DENABLE_TESTING=1 -GNinja -S . -B .cmake-build && cmake --build .cmake-build && ctest -V --test-dir .cmake-build
+
+      - name: Devcontainer CTest
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: devcontainers/ci@v0.3
+        with:
+          runCmd: cmake -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DENABLE_TESTING=1 -GNinja -S . -B .devcontainer-build && cmake --build .devcontainer-build && ctest -V --test-dir .devcontainer-build
+
+      - name: 'Xcode (build only—"error: Scheme DummyTestee is not currently configured for the test action.")'
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          cmake -DENABLE_TESTING=1 -GXcode -S . -B .xcode-build
+          cd .xcode-build
+          xcrun xcodebuild -configuration ${{ matrix.configuration }} -scheme DummyTestee -destination 'platform=macOS' build-for-testing
