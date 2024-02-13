@@ -21,9 +21,14 @@ jobs:
           show-progress: false
 
       - name: Setup Swift
+        if: ${{ matrix.os == 'macos-latest' }}
         uses: SwiftyLab/setup-swift@latest
         with:
           swift-version: 5.9
+
+      - uses: seanmiddleditch/gha-setup-ninja@v4
+        with:
+          version: 1.11.1
 
       - name: Native CTest
         run: cmake -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DENABLE_TESTING=1 -GNinja -S . -B .cmake-build && cmake --build .cmake-build && ctest -V --test-dir .cmake-build
