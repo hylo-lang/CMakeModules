@@ -23,3 +23,7 @@ This project has two major components:
    build systems, and is not CMake-specific.  It is used automatically
    by the `add_swift_xctest` function described above when not
    building on macOS.
+
+## Testing this package
+
+cmake -DENABLE_TESTING=1 -GNinja -S . -B .build && cmake --build .build && ctest -V --test-dir .build

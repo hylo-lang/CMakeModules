@@ -1,7 +1,3 @@
-# mkdir -p .cmake-build && ( cd .cmake-build && cmake -DENABLE_TESTING=1 -GNinja -S .. && cmake --build . && ctest -V )
-#
-# Windows:
-# mkdir .cmake-build && vcvarsarm64.bat && cd .cmake-build && cmake -DENABLE_TESTING=1 -GNinja -S .. && cmake --build . && ctest -V
 cmake_minimum_required(VERSION 3.26)
 
 if(POLICY CMP0077)
