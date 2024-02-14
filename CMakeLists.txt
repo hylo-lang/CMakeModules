@@ -1,19 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
 
-if(POLICY CMP0077)
-  cmake_policy(SET CMP0077 NEW)
-endif()
-
-# MSVC runtime library flags are selected by an abstraction.
-if(POLICY CMP0091)
-  cmake_policy(SET CMP0091 NEW)
-endif()
-
-# enable LSP support
-if(POLICY CMP0157)
-  cmake_policy(SET CMP0157 NEW)
-endif()
-
 project(XCTestDiscovery LANGUAGES Swift)
 enable_testing()
 
