@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.26)
 project(XCTestDiscovery LANGUAGES Swift)
 enable_testing()
 
+if (PROJECT_IS_TOP_LEVEL)
+  include(${PROJECT_SOURCE_DIR}/cmake/TopLevelDefaults.cmake)
+endif()
+
 #
 # Dependencies
 #
