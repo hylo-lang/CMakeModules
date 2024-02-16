@@ -120,15 +120,15 @@ function(add_swift_xctest test_target testee)
     find_package(XCTest CONFIG QUIET)
 
     set(test_main "${PROJECT_BINARY_DIR}/${test_target}-test_main/main.swift")
-    if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-      set(sep ";")
-    else()
-      set(sep ":")
-    endif()
-
     add_custom_command(
       OUTPUT ${test_main}
-      COMMAND  ${CMAKE_COMMAND} -E env "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:generate-xctest-main>;$ENV{PATH},${sep}>" -- $<TARGET_FILE:generate-xctest-main> -o ${test_main} ${sources}
+      # If the executable target depends on DLLs their directories need to be injected into the PATH
+      # or they won't be found and the target will fail to run, so invoke it through cmake.  Because
+      COMMAND
+        ${CMAKE_COMMAND} -E env
+        "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:generate-xctest-main>;$ENV{PATH},;>"
+        --
+        $<TARGET_FILE:generate-xctest-main> -o ${test_main} ${sources}
       DEPENDS ${sources} generate-xctest-main
       COMMENT "Generate runner for test target ${test_target}")
 
@@ -139,16 +139,16 @@ function(add_swift_xctest test_target testee)
     add_test(NAME ${test_target}
       COMMAND ${test_target})
 
-    # Escape the semicolons when forming the environment setting.  As
-    # explained in https://stackoverflow.com/a/59866840/125349, this
-    # is not the last place the list will be used (and interpreted by
-    # CMake). [It] is then used to populate CTestTestfile.cmake, which
-    # is later read by CTest to setup your test environment.
-    if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-      set(sep "\\;")
-    endif()
+    # When $ENV{PATH} is interpreted as a list on Windows, trailing backslashes in elements
+    # (e.g. "C:\path\to\foo\;C:\another\path\...") will end up causing semicolons to be escaped.
     string(REPLACE "\\" "/" path "$ENV{PATH}")
-    set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:${test_target}>;${path},${sep}>")
+
+    # Escape the semicolons when forming the environment setting.  As explained in
+    # https://stackoverflow.com/a/59866840/125349, “this is not the last place the list will be used
+    # (and interpreted by CMake). [It] is then used to populate CTestTestfile.cmake, which is later
+    # read by CTest to setup your test environment.”
+    set_tests_properties(${test_target}
+      PROPERTIES ENVIRONMENT "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:${test_target}>;${path},\\;>")
 
   endif()
 
