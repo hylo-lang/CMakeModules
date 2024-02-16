@@ -5,7 +5,7 @@ A cross-platform bridge between CMake/CTest and XCTest for Swift projects.
 This project has two major components:
 
 1. A cross-platform CMake component
-   [SwiftXCTestCTestBridge.cmake](https://github.com/hylo-lang/SwiftCMakeXCTesting/blob/main/cmake/SwiftXCTestCTestBridge.cmake)
+   [SwiftCMakeXCTesting.cmake](https://github.com/hylo-lang/SwiftCMakeXCTesting/blob/main/cmake/SwiftCMakeXCTesting.cmake)
    that declares an `add_swift_xctest` function.  It can be used to
    declare an XCTest target that can be run by `ctest`.
    
