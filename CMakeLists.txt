@@ -3,10 +3,6 @@ cmake_minimum_required(VERSION 3.26)
 project(XCTestDiscovery LANGUAGES Swift)
 enable_testing()
 
-# Either the following, or set(BUILD_SHARED_LIBS NO), is currently
-# required for generate-xctest-main to run successfully on Windows.
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 #
 # Dependencies
 #

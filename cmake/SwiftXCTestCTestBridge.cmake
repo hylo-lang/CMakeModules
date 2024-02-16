@@ -119,10 +119,16 @@ function(add_swift_xctest test_target testee)
 
     find_package(XCTest CONFIG QUIET)
 
-    set(test_main ${PROJECT_BINARY_DIR}/${test_target}-test_main/main.swift)
+    set(test_main "${PROJECT_BINARY_DIR}/${test_target}-test_main/main.swift")
+    if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+      set(sep ";")
+    else()
+      set(sep ":")
+    endif()
+
     add_custom_command(
       OUTPUT ${test_main}
-      COMMAND generate-xctest-main -o ${test_main} ${sources}
+      COMMAND  ${CMAKE_COMMAND} -E env "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:generate-xctest-main>;$ENV{PATH},${sep}>" -- $<TARGET_FILE:generate-xctest-main> -o ${test_main} ${sources}
       DEPENDS ${sources} generate-xctest-main
       COMMENT "Generate runner for test target ${test_target}")
 
@@ -133,20 +139,16 @@ function(add_swift_xctest test_target testee)
     add_test(NAME ${test_target}
       COMMAND ${test_target})
 
-    # Attempt to make sure ctest can find the XCTest DLL.
-    if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-      get_target_property(xctest_dll_path XCTest IMPORTED_LOCATION)
-      cmake_path(GET xctest_dll_path PARENT_PATH xctest_dll_directory)
-      cmake_path(NATIVE_PATH xctest_dll_directory xctest_dll_directory)
-      set(path $ENV{PATH})
-      list(PREPEND path "${xctest_dll_directory}")
-      # Escape the semicolons when forming the environment setting.  As explained in
-      # https://stackoverflow.com/a/59866840/125349, this is not the last place the list will be
-      # used (and interpreted by CMake). [It] is then used to populate CTestTestfile.cmake, which is
-      # later read by CTest to setup your test environment.
-      list(JOIN path "\\;" testPath)
-      set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "PATH=${testPath}")
+    # Escape the semicolons when forming the environment setting.  As
+    # explained in https://stackoverflow.com/a/59866840/125349, this
+    # is not the last place the list will be used (and interpreted by
+    # CMake). [It] is then used to populate CTestTestfile.cmake, which
+    # is later read by CTest to setup your test environment.
+    if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+      set(sep "\\;")
     endif()
+    string(REPLACE "\\" "/" path "$ENV{PATH}")
+    set_tests_properties(${test_target} PROPERTIES ENVIRONMENT "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:${test_target}>;${path},${sep}>")
 
   endif()
 
