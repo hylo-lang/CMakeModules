@@ -13,7 +13,7 @@ typealias TestCatalog = [String: [String]]
 /// A command-line tool that generates XCTest cases for a list of annotated ".hylo" files as part of
 /// our build process.
 @main
-struct XCTestDiscovery: ParsableCommand {
+struct GenerateXCTestMain: ParsableCommand {
 
   @Option(
     name: [.customShort("o")],

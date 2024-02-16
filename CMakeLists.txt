@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 
-project(XCTestDiscovery LANGUAGES Swift)
+project(SwiftCMakeXCTesting LANGUAGES Swift)
 enable_testing()
 
 if (PROJECT_IS_TOP_LEVEL)
@@ -51,7 +51,7 @@ set(BUILD_EXAMPLES ${_XCTESTDISCOVERY_SAVED_BUILD_EXAMPLES})
 # Local targets
 #
 
-add_executable(generate-xctest-main Sources/XCTestDiscovery.swift)
+add_executable(generate-xctest-main Sources/GenerateXCTestMain.swift)
 target_link_libraries(generate-xctest-main
   ArgumentParser
   SwiftSyntax

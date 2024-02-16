@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "XCTestDiscovery",
+  name: "SwiftCMakeXCTesting",
   platforms: [
     .macOS(.v13)
   ],
