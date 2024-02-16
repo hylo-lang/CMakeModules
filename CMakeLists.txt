@@ -60,7 +60,7 @@ target_link_libraries(generate-xctest-main
 target_compile_options(generate-xctest-main PRIVATE -parse-as-library)
 
 if(ENABLE_TESTING)
-  include(${PROJECT_SOURCE_DIR}/CMakeModules/SwiftXCTestCTestBridge.cmake)
+  include(${PROJECT_SOURCE_DIR}/cmake/modules/SwiftXCTestCTestBridge.cmake)
   add_library(DummyTestee STATIC ${PROJECT_SOURCE_DIR}/Tests/Dummy.swift)
   target_compile_options(DummyTestee PRIVATE -enable-testing)
 
