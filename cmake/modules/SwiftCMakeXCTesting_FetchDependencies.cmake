@@ -1,5 +1,23 @@
-# Fetches dependencies for SwiftCMakeXCTesting.
+# Fetches dependencies for SwiftCMakeXCTesting, almost unconditionally.  The only way to override
+# this behavior is to use ``FETCHCONTENT_SOURCE_DIR_<uppercaseName>``.
+
 include(FetchContent)
+
+block()
+  set(FETCHCONTENT_TRY_FIND_PACKAGE_MODE NEVER)
+
+  FetchContent_Declare(SwiftSyntax
+    GIT_REPOSITORY https://github.com/apple/swift-syntax.git
+    GIT_TAG        main
+    OVERRIDE_FIND_PACKAGE
+  )
+
+  FetchContent_Declare(ArgumentParser
+    GIT_REPOSITORY https://github.com/apple/swift-argument-parser.git
+    GIT_TAG        1.3.0
+    OVERRIDE_FIND_PACKAGE
+  )
+endblock()
 
 # See https://github.com/apple/swift-syntax/pull/2454, which will hopefully make this clause
 # unnecessary.  Without it CMake will fatal error when loading SwiftSyntax on some platforms.
@@ -9,32 +27,17 @@ if("${SWIFT_HOST_MODULE_TRIPLE}" STREQUAL "")
   string(JSON SWIFT_HOST_MODULE_TRIPLE GET ${target-info} target moduleTriple)
 endif()
 
-FetchContent_Declare(SwiftSyntax
-  GIT_REPOSITORY https://github.com/apple/swift-syntax.git
-  GIT_TAG        main
-  FIND_PACKAGE_ARGS CONFIG
-)
+block()
+  set(BUILD_EXAMPLES NO)
+  set(BUILD_TESTING NO)
 
-FetchContent_Declare(ArgumentParser
-  GIT_REPOSITORY https://github.com/apple/swift-argument-parser.git
-  GIT_TAG        1.3.0
-  FIND_PACKAGE_ARGS CONFIG
-)
+  FetchContent_MakeAvailable(ArgumentParser SwiftSyntax)
+endblock()
 
-set(_XCTESTDISCOVERY_SAVED_BUILD_TESTING ${BUILD_TESTING})
-set(_XCTESTDISCOVERY_SAVED_BUILD_EXAMPLES ${BUILD_EXAMPLES})
-
-set(BUILD_EXAMPLES NO)
-set(BUILD_TESTING NO)
-
-FetchContent_MakeAvailable(ArgumentParser SwiftSyntax)
-
+# Suppress noisy warnings from dependencies.
 target_compile_options(SwiftCompilerPluginMessageHandling PRIVATE -suppress-warnings)
 target_compile_options(SwiftParser PRIVATE -suppress-warnings)
 target_compile_options(SwiftParserDiagnostics PRIVATE -suppress-warnings)
 target_compile_options(SwiftSyntaxMacroExpansion PRIVATE -suppress-warnings)
 target_compile_options(SwiftOperators PRIVATE -suppress-warnings)
 
-
-set(BUILD_TESTING ${_XCTESTDISCOVERY_SAVED_BUILD_TESTING})
-set(BUILD_EXAMPLES ${_XCTESTDISCOVERY_SAVED_BUILD_EXAMPLES})
