@@ -126,10 +126,10 @@ function(add_swift_xctest test_target testee)
       # or they won't be found and the target will fail to run, so invoke it through cmake.  Because
       COMMAND
         ${CMAKE_COMMAND} -E env
-        "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:generate-xctest-main>;$ENV{PATH},;>"
+        "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:GenerateXCTestMain>;$ENV{PATH},;>"
         --
-        $<TARGET_FILE:generate-xctest-main> -o ${test_main} ${sources}
-      DEPENDS ${sources} generate-xctest-main
+        $<TARGET_FILE:GenerateXCTestMain> -o ${test_main} ${sources}
+      DEPENDS ${sources} GenerateXCTestMain
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
       COMMENT "Generate runner for test target ${test_target}")
 

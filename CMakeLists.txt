@@ -14,7 +14,7 @@ enable_testing()
 list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 option(SwiftCMakeXCTesting_FORCE_BUILD_GenerateXCTestMain
-  "Force-build generate-xctest-main on platforms where it's not needed." OFF)
+  "Force-build GenerateXCTestMain on platforms where it's not needed." OFF)
 mark_as_advanced(SwiftCMakeXCTesting_FORCE_BUILD_GenerateXCTestMain)
 
 if (PROJECT_IS_TOP_LEVEL)
@@ -25,8 +25,8 @@ if(NOT APPLE OR SwiftCMakeXCTesting_FORCE_BUILD_GenerateXCTestMain)
   find_package(ArgumentParser REQUIRED)
   find_package(SwiftSyntax REQUIRED)
 
-  add_executable(generate-xctest-main Sources/GenerateXCTestMain.swift)
-  target_link_libraries(generate-xctest-main
+  add_executable(GenerateXCTestMain Sources/GenerateXCTestMain.swift)
+  target_link_libraries(GenerateXCTestMain
     ArgumentParser
     SwiftSyntax
     SwiftSyntaxBuilder
@@ -36,7 +36,7 @@ if(NOT APPLE OR SwiftCMakeXCTesting_FORCE_BUILD_GenerateXCTestMain)
   )
 
   # Needed where @main is used.
-  target_compile_options(generate-xctest-main PRIVATE -parse-as-library)
+  target_compile_options(GenerateXCTestMain PRIVATE -parse-as-library)
 endif()
 
 if(ENABLE_TESTING)
