@@ -18,7 +18,7 @@ option(SwiftCMakeXCTesting_FORCE_BUILD_GenerateXCTestMain
 mark_as_advanced(SwiftCMakeXCTesting_FORCE_BUILD_GenerateXCTestMain)
 
 if (PROJECT_IS_TOP_LEVEL)
-  include(${PROJECT_SOURCE_DIR}/cmake/TopLevelDefaults.cmake)
+  include(cmake/TopLevelDefaults.cmake)
 endif()
 
 if(NOT APPLE OR SwiftCMakeXCTesting_FORCE_BUILD_GenerateXCTestMain)
@@ -40,9 +40,5 @@ if(NOT APPLE OR SwiftCMakeXCTesting_FORCE_BUILD_GenerateXCTestMain)
 endif()
 
 if(ENABLE_TESTING)
-  include(${PROJECT_SOURCE_DIR}/cmake/modules/SwiftCMakeXCTesting.cmake)
-  add_library(DummyTestee STATIC ${PROJECT_SOURCE_DIR}/Tests/Dummy.swift)
-  target_compile_options(DummyTestee PRIVATE -enable-testing)
-
-  add_swift_xctest(XCTestBridgeTests DummyTestee ${PROJECT_SOURCE_DIR}/Tests/Tests.swift)
+  add_subdirectory(Tests)
 endif()

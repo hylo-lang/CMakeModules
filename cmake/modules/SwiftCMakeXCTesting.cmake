@@ -130,6 +130,7 @@ function(add_swift_xctest test_target testee)
         --
         $<TARGET_FILE:generate-xctest-main> -o ${test_main} ${sources}
       DEPENDS ${sources} generate-xctest-main
+      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
       COMMENT "Generate runner for test target ${test_target}")
 
     add_executable(${test_target} ${test_main} ${sources})
