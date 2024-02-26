@@ -118,8 +118,6 @@ function(add_swift_xctest test_target testee)
 
   else()
 
-    find_package(XCTest CONFIG QUIET)
-
     set(test_main "${PROJECT_BINARY_DIR}/${test_target}-test_main/main.swift")
     add_custom_command(
       OUTPUT ${test_main}
