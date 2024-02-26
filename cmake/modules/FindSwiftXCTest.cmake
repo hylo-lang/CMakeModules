@@ -1,7 +1,11 @@
+add_library(SwiftXCTest INTERFACE)
+target_link_libraries(SwiftXCTest INTERFACE XCTest)
+
 if(APPLE)
 
   find_package(XCTest REQUIRED)
-  add_library(XCTest SHARED IMPORTED)
+  add_library(XCTest INTERFACE) # the Objective-C XCTest module
+  target_link_libraries(XCTest INTERFACE ${XCTest_LIBRARIES})
 
   # Determine the .../<Platform>.platform/Developer directory prefix where XCTest can be found.
   # TODO: the directories derived from this should probably have a CMakeCache entry.
@@ -16,14 +20,15 @@ if(APPLE)
     message(FATAL_ERROR "failed to find platform developer directory in ${CMAKE_Swift_IMPLICIT_INCLUDE_DIRECTORIES}")
   endif()
 
-  target_include_directories(XCTest INTERFACE ${platform_developer}/usr/lib/)
-  target_link_libraries(XCTest INTERFACE ${XCTest_LIBRARIES})
-  set_target_properties(XCTest PROPERTIES
-    IMPORTED_LOCATION ${platform_developer}/usr/lib/libXCTestSwiftSupport.dylib)
+  # Where to find the XCTestSwiftSupport.swiftmodule
+  target_include_directories(SwiftXCTest
+    INTERFACE ${platform_developer}/usr/lib/)
+  # Where to find libXCTestSwiftSupport.dylib
+  set_target_properties(SwiftXCTest
+    PROPERTIES INTERFACE_LINK_DIRECTORIES ${platform_developer}/usr/lib)
 
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 
-  add_library(XCTest SHARED IMPORTED)
   #
   # Logic lifted from https://github.com/apple/swift-package-manager/blob/e10ff906c/Sources/PackageModel/UserToolchain.swift#L361-L447 with thanks to @compnerd.
   #
@@ -85,12 +90,8 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     target_link_directories(XCTest INTERFACE ${p})
   endif()
 
-else()
-
-  # I'm not sure this has any effect
-  find_package(XCTest CONFIG QUIET)
-
 endif()
+
 
 # add_swift_xctest(
 #   <name> <testee>
@@ -113,7 +114,7 @@ function(add_swift_xctest test_target testee)
   if(APPLE)
 
     xctest_add_bundle(${test_target} ${testee} ${sources})
-    target_link_libraries(${test_target} PRIVATE XCTest ${dependencies})
+    target_link_libraries(${test_target} PRIVATE SwiftXCTest ${dependencies})
     xctest_add_test(XCTest.${test_target} ${test_target})
 
   else()
@@ -134,7 +135,7 @@ function(add_swift_xctest test_target testee)
 
     add_executable(${test_target} ${test_main} ${sources})
 
-    target_link_libraries(${test_target} PRIVATE ${testee} XCTest ${dependencies})
+    target_link_libraries(${test_target} PRIVATE ${testee} SwiftXCTest ${dependencies})
 
     add_test(NAME ${test_target}
       COMMAND ${test_target})

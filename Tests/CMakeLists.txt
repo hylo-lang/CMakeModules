@@ -1,7 +1,7 @@
 find_package(SwiftXCTest REQUIRED)
 
 add_library(XCTestImporter XCTestImporter.swift)
-target_link_libraries(XCTestImporter XCTest)
+target_link_libraries(XCTestImporter SwiftXCTest)
 
 add_library(DummyTestee STATIC Dummy.swift)
 
