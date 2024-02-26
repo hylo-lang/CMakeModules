@@ -1,6 +1,6 @@
 if(APPLE)
 
-  include(FindXCTest)
+  find_package(XCTest REQUIRED)
   add_library(XCTest SHARED IMPORTED)
 
   # Determine the .../<Platform>.platform/Developer directory prefix where XCTest can be found.
