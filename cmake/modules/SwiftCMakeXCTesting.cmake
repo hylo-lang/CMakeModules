@@ -17,6 +17,7 @@ if(APPLE)
   endif()
 
   target_include_directories(XCTest INTERFACE ${platform_developer}/usr/lib/)
+  target_link_libraries(XCTest INTERFACE ${XCTest_LIBRARIES})
   set_target_properties(XCTest PROPERTIES
     IMPORTED_LOCATION ${platform_developer}/usr/lib/libXCTestSwiftSupport.dylib)
 
