@@ -1,4 +1,4 @@
-include(SwiftCMakeXCTesting)
+find_package(SwiftXCTest REQUIRED)
 
 add_library(XCTestImporter XCTestImporter.swift)
 target_link_libraries(XCTestImporter XCTest)
