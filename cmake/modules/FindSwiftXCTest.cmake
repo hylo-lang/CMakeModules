@@ -85,6 +85,11 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     target_link_directories(XCTest INTERFACE ${p})
   endif()
 
+else()
+
+  # I'm not sure this has any effect
+  find_package(XCTest CONFIG QUIET)
+
 endif()
 
 # add_swift_xctest(
