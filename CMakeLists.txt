@@ -11,6 +11,8 @@ project(SwiftCMakeXCTesting
 )
 enable_testing()
 
+set(CMAKE_XCODE_GENERATE_SCHEME YES)
+
 list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 option(SwiftCMakeXCTesting_FORCE_BUILD_GenerateXCTestMain
