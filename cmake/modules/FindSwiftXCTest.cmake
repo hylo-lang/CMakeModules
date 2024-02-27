@@ -29,6 +29,7 @@ if(APPLE)
 
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
 
+  add_library(XCTest SHARED IMPORTED)
   #
   # Logic lifted from https://github.com/apple/swift-package-manager/blob/e10ff906c/Sources/PackageModel/UserToolchain.swift#L361-L447 with thanks to @compnerd.
   #
