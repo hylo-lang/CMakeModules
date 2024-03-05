@@ -1,9 +1,9 @@
+find_package(XCTest REQUIRED)
 add_library(SwiftXCTest INTERFACE)
 target_link_libraries(SwiftXCTest INTERFACE XCTest)
 
 if(APPLE)
 
-  find_package(XCTest REQUIRED)
   add_library(XCTest INTERFACE) # the Objective-C XCTest module
   target_link_libraries(XCTest INTERFACE ${XCTest_LIBRARIES})
 
