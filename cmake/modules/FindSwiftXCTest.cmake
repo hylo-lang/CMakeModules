@@ -125,9 +125,9 @@ function(add_swift_xctest test_target testee)
       OUTPUT ${test_main}
       # If the executable target depends on DLLs their directories need to be injected into the PATH
       # or they won't be found and the target will fail to run, so invoke it through cmake.  Because
-      COMMAND ${CMAKE_COMMAND} -E env
-        $<$<LIST:LENGTH,$<TARGET_RUNTIME_DLL_DIRS:GenerateXCTestMain>>:--modify>
-        "$<LIST:TRANSFORM,$<TARGET_RUNTIME_DLL_DIRS:GenerateXCTestMain>,PREPEND,PATH=path_list_prepend:>"
+      COMMAND
+        ${CMAKE_COMMAND} -E env
+        "PATH=$<SHELL_PATH:$<TARGET_RUNTIME_DLL_DIRS:GenerateXCTestMain>;$ENV{PATH}>"
         --
         $<TARGET_FILE:GenerateXCTestMain> -o ${test_main} ${sources}
       DEPENDS ${sources} GenerateXCTestMain
