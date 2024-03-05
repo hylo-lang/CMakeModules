@@ -127,7 +127,7 @@ function(add_swift_xctest test_target testee)
       # or they won't be found and the target will fail to run, so invoke it through cmake.  Because
       COMMAND
         ${CMAKE_COMMAND} -E env
-        "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:GenerateXCTestMain>;$ENV{PATH},;>"
+        "PATH=$<SHELL_PATH:$<TARGET_RUNTIME_DLL_DIRS:GenerateXCTestMain>;$ENV{PATH}>"
         --
         $<TARGET_FILE:GenerateXCTestMain> -o ${test_main} ${sources}
       DEPENDS ${sources} GenerateXCTestMain
@@ -141,16 +141,10 @@ function(add_swift_xctest test_target testee)
     add_test(NAME ${test_target}
       COMMAND ${test_target})
 
-    # When $ENV{PATH} is interpreted as a list on Windows, trailing backslashes in elements
-    # (e.g. "C:\path\to\foo\;C:\another\path\...") will end up causing semicolons to be escaped.
-    string(REPLACE "\\" "/" path "$ENV{PATH}")
-
-    # Escape the semicolons when forming the environment setting.  As explained in
-    # https://stackoverflow.com/a/59866840/125349, “this is not the last place the list will be used
-    # (and interpreted by CMake). [It] is then used to populate CTestTestfile.cmake, which is later
-    # read by CTest to setup your test environment.”
     set_tests_properties(${test_target}
-      PROPERTIES ENVIRONMENT "PATH=$<JOIN:$<TARGET_RUNTIME_DLL_DIRS:${test_target}>;${path},\\;>")
+      PROPERTIES ENVIRONMENT_MODIFICATION
+      # For each DLL dependency X, make the PATH=path_list_prepend:X environment modification.
+      "$<LIST:TRANSFORM,$<TARGET_RUNTIME_DLL_DIRS:${test_target}>,PREPEND,PATH=path_list_prepend:>")
 
   endif()
 
