@@ -141,12 +141,9 @@ function(add_swift_xctest test_target testee)
     add_test(NAME ${test_target}
       COMMAND ${test_target})
 
-    # When $ENV{PATH} is interpreted as a list on Windows, trailing backslashes in elements
-    # (e.g. "C:\path\to\foo\;C:\another\path\...") will end up causing semicolons to be escaped.
-    string(REPLACE "\\" "/" path "$ENV{PATH}")
-
     set_tests_properties(${test_target}
       PROPERTIES ENVIRONMENT_MODIFICATION
+      # For each DLL dependency X, make the PATH=path_list_prepend:X environment modification.
       "$<LIST:TRANSFORM,$<TARGET_RUNTIME_DLL_DIRS:${test_target}>,PREPEND,PATH=path_list_prepend:>")
 
   endif()
