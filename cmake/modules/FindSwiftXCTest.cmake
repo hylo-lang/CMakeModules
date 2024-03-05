@@ -1,37 +1,38 @@
-add_library(SwiftXCTest INTERFACE)
-target_link_libraries(SwiftXCTest INTERFACE XCTest)
+# Adds the XCTest target.
+macro(_FindSwiftXCTest_add_XCTest)
+  # This is a macro because it ultimately calls find_package, which
+  # will set variables inside the function scope from which it was
+  # called.
+  if(APPLE)
+    _FindSwiftXCTest_add_XCTest_apple()
+  elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+    _FindSwiftXCTest_add_XCTest_windows()
+  else()
+    _FindSwiftXCTest_add_XCTest_unknown_host()
+  endif()
+endmacro()
 
-if(APPLE)
-
+# Uses the Apple-only support in FindXCTest to create the XCTest library.
+macro(_FindSwiftXCTest_add_XCTest_apple)
+  # This is a macro because it calls find_package, which will set
+  # variables inside the function scope from which it was called.
   find_package(XCTest REQUIRED)
+  message("XCTest was found? ${XCTest_FOUND}")
   add_library(XCTest INTERFACE) # the Objective-C XCTest module
   target_link_libraries(XCTest INTERFACE ${XCTest_LIBRARIES})
+endmacro()
 
-  # Determine the .../<Platform>.platform/Developer directory prefix where XCTest can be found.
-  # TODO: the directories derived from this should probably have a CMakeCache entry.
-  set(platform_developer "")
-  foreach(d ${CMAKE_Swift_IMPLICIT_INCLUDE_DIRECTORIES})
-    if(${d} MATCHES "^(.*[.]platform/Developer)/SDKs/.*")
-      string(REGEX REPLACE "^(.*[.]platform/Developer)/SDKs/.*" "\\1" platform_developer ${d})
-      break()
-    endif()
-  endforeach()
-  if(${platform_developer} STREQUAL "")
-    message(FATAL_ERROR "failed to find platform developer directory in ${CMAKE_Swift_IMPLICIT_INCLUDE_DIRECTORIES}")
-  endif()
-
-  # Where to find the XCTestSwiftSupport.swiftmodule
-  target_include_directories(SwiftXCTest
-    INTERFACE ${platform_developer}/usr/lib/)
-  # Where to find libXCTestSwiftSupport.dylib
-  set_target_properties(SwiftXCTest
-    PROPERTIES INTERFACE_LINK_DIRECTORIES ${platform_developer}/usr/lib)
-
-elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+# Adds the XCTest library using the same logic as Swift Package
+# Manager uses.
+function(_FindSwiftXCTest_add_XCTest_windows)
 
   add_library(XCTest SHARED IMPORTED)
   #
-  # Logic lifted from https://github.com/apple/swift-package-manager/blob/e10ff906c/Sources/PackageModel/UserToolchain.swift#L361-L447 with thanks to @compnerd.
+  # Logic lifted from
+  # https://github.com/apple/swift-package-manager/blob/e10ff906c/Sources/PackageModel/UserToolchain.swift#L361-L447
+  # with thanks to @compnerd. The code is ugly, but it intentionally
+  # matches the structure from Swift Package Manager to make it easy
+  # to maintain the correspondence.
   #
   cmake_path(CONVERT $ENV{SDKROOT} TO_CMAKE_PATH_LIST sdkroot NORMALIZE)
   if(${sdkroot} MATCHES ".*/$") # CMake is nutty about trailing slashes; strip any that are there.
@@ -91,8 +92,46 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     target_link_directories(XCTest INTERFACE ${p})
   endif()
 
-endif()
+endfunction()
 
+# Adds the XCTest library target using the normal logic for
+# pre-installed libraries.
+function(_FindSwiftXCTest_add_XCTest_unknown_host)
+  find_library(
+    XCTest_LIBRARY
+    NAMES XCTest
+    DOC "XCTest library")
+endfunction()
+
+# Adds the swift-only SwiftXCTest target.
+#
+# - Precondition: the XCTest target exists
+function(_FindSwiftXCTest_add_SwiftXCTest)
+  add_library(SwiftXCTest INTERFACE)
+  target_link_libraries(SwiftXCTest INTERFACE XCTest)
+
+  if(APPLE)
+    # Determine the .../<Platform>.platform/Developer directory prefix where XCTest can be found.
+    # TODO: the directories derived from this should probably have a CMakeCache entry.
+    set(platform_developer "")
+    foreach(d ${CMAKE_Swift_IMPLICIT_INCLUDE_DIRECTORIES})
+      if(${d} MATCHES "^(.*[.]platform/Developer)/SDKs/.*")
+	string(REGEX REPLACE "^(.*[.]platform/Developer)/SDKs/.*" "\\1" platform_developer ${d})
+	break()
+      endif()
+    endforeach()
+    if(${platform_developer} STREQUAL "")
+      message(FATAL_ERROR "failed to find platform developer directory in ${CMAKE_Swift_IMPLICIT_INCLUDE_DIRECTORIES}")
+    endif()
+
+    # Where to find the XCTestSwiftSupport.swiftmodule
+    target_include_directories(SwiftXCTest
+      INTERFACE ${platform_developer}/usr/lib/)
+    # Where to find libXCTestSwiftSupport.dylib
+    set_target_properties(SwiftXCTest
+      PROPERTIES INTERFACE_LINK_DIRECTORIES ${platform_developer}/usr/lib)
+  endif()
+endfunction()
 
 # add_swift_xctest(
 #   <name> <testee>
@@ -149,3 +188,6 @@ function(add_swift_xctest test_target testee)
   endif()
 
 endfunction()
+
+_FindSwiftXCTest_add_XCTest()
+_FindSwiftXCTest_add_SwiftXCTest()
