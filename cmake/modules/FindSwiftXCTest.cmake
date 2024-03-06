@@ -103,6 +103,40 @@ function(_FindSwiftXCTest_add_XCTest_unknown_host)
     DOC "XCTest library")
 endfunction()
 
+# If APPLE_PLATFORM_DEVELOPER_DIRECTORY is unset, sets it to the
+# .../<Platform>.platform/Developer directory of Swift's target
+# platform in the current Swift toolchain, or exits with a fatal error
+# if that directory can't be found.
+#
+# Requires: ${APPLE}
+function(_FindSwiftXCTest_apple_swift_Platform_Developer_directory)
+  if(DEFINED APPLE_PLATFORM_DEVELOPER_DIRECTORY)
+    return()
+  endif()
+
+  set(platform_developer "")
+  foreach(d ${CMAKE_Swift_IMPLICIT_INCLUDE_DIRECTORIES})
+    if(${d} MATCHES "^(.*[.]platform/Developer)/SDKs/.*")
+      string(REGEX REPLACE "^(.*[.]platform/Developer)/SDKs/.*" "\\1" platform_developer ${d})
+      break()
+    endif()
+  endforeach()
+
+  if(${platform_developer} STREQUAL "")
+    set(platform_developer "APPLE_PLATFORM_DEVELOPER_DIRECTORY-NOTFOUND")
+  endif()
+
+  set(APPLE_PLATFORM_DEVELOPER_DIRECTORY
+    "${platform_developer}" CACHE PATH
+    "The .../<Platform>.platform/Developer directory of Swift's target platform in the current Swift toolchain.")
+
+  if(NOT APPLE_PLATFORM_DEVELOPER_DIRECTORY)
+    message(FATAL_ERROR
+      "failed to find platform developer directory in ${CMAKE_Swift_IMPLICIT_INCLUDE_DIRECTORIES}")
+  endif()
+
+endfunction()
+
 # Adds the swift-only SwiftXCTest target.
 #
 # - Precondition: the XCTest target exists
@@ -111,25 +145,14 @@ function(_FindSwiftXCTest_add_SwiftXCTest)
   target_link_libraries(SwiftXCTest INTERFACE XCTest)
 
   if(APPLE)
-    # Determine the .../<Platform>.platform/Developer directory prefix where XCTest can be found.
-    # TODO: the directories derived from this should probably have a CMakeCache entry.
-    set(platform_developer "")
-    foreach(d ${CMAKE_Swift_IMPLICIT_INCLUDE_DIRECTORIES})
-      if(${d} MATCHES "^(.*[.]platform/Developer)/SDKs/.*")
-	string(REGEX REPLACE "^(.*[.]platform/Developer)/SDKs/.*" "\\1" platform_developer ${d})
-	break()
-      endif()
-    endforeach()
-    if(${platform_developer} STREQUAL "")
-      message(FATAL_ERROR "failed to find platform developer directory in ${CMAKE_Swift_IMPLICIT_INCLUDE_DIRECTORIES}")
-    endif()
+    _FindSwiftXCTest_apple_swift_Platform_Developer_directory(platform_developer)
 
     # Where to find the XCTestSwiftSupport.swiftmodule
     target_include_directories(SwiftXCTest
-      INTERFACE ${platform_developer}/usr/lib/)
+      INTERFACE ${APPLE_PLATFORM_DEVELOPER_DIRECTORY}/usr/lib/)
     # Where to find libXCTestSwiftSupport.dylib
     set_target_properties(SwiftXCTest
-      PROPERTIES INTERFACE_LINK_DIRECTORIES ${platform_developer}/usr/lib)
+      PROPERTIES INTERFACE_LINK_DIRECTORIES ${APPLE_PLATFORM_DEVELOPER_DIRECTORY}/usr/lib)
   endif()
 endfunction()
 
