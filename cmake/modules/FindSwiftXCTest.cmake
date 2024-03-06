@@ -1,8 +1,7 @@
+find_package(XCTest)
+
 # Adds the XCTest target.
-macro(_FindSwiftXCTest_add_XCTest)
-  # This is a macro because it ultimately calls find_package, which
-  # will set variables inside the function scope from which it was
-  # called.
+function(_FindSwiftXCTest_add_XCTest)
   if(APPLE)
     _FindSwiftXCTest_add_XCTest_apple()
   elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
@@ -10,17 +9,16 @@ macro(_FindSwiftXCTest_add_XCTest)
   else()
     _FindSwiftXCTest_add_XCTest_unknown_host()
   endif()
-endmacro()
+endfunction()
 
 # Uses the Apple-only support in FindXCTest to create the XCTest library.
-macro(_FindSwiftXCTest_add_XCTest_apple)
-  # This is a macro because it calls find_package, which will set
-  # variables inside the function scope from which it was called.
-  find_package(XCTest REQUIRED)
-  message("XCTest was found? ${XCTest_FOUND}")
+function(_FindSwiftXCTest_add_XCTest_apple)
+  if(NOT XCTest_FOUND)
+    message(FATAL_ERROR "XCTest is required, but was not found.")
+  endif()
   add_library(XCTest INTERFACE) # the Objective-C XCTest module
   target_link_libraries(XCTest INTERFACE ${XCTest_LIBRARIES})
-endmacro()
+endfunction()
 
 # Adds the XCTest library using the same logic as Swift Package
 # Manager uses.
@@ -175,7 +173,10 @@ function(add_swift_xctest test_target testee)
   set(dependencies ${ARG_DEPENDENCIES})
 
   if(APPLE)
-
+  
+    if(NOT XCTest_FOUND)
+      message(FATAL_ERROR "XCTest is required, but was not found.")
+    endif()
     xctest_add_bundle(${test_target} ${testee} ${sources})
     target_link_libraries(${test_target} PRIVATE SwiftXCTest ${dependencies})
     xctest_add_test(XCTest.${test_target} ${test_target})
