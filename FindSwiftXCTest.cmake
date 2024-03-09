@@ -1,4 +1,5 @@
-find_package(XCTest)
+include_guard(GLOBAL)
+find_package(XCTest QUIET)
 
 # Adds the XCTest target.
 function(_FindSwiftXCTest_add_XCTest)
