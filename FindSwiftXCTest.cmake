@@ -1,3 +1,60 @@
+# Distributed under the Apache License, Version 2.0, with Runtime Library
+# Exception.  See accompanying file LICENSE for details.
+
+#[=======================================================================[.rst:
+FindSwiftXCTest
+---------------
+
+Finds the XCTest library for use by Swift code and provides functions for
+adding Swift tests.
+
+Module Functions
+^^^^^^^^^^^^^^^^
+
+.. command:: add_swift_xctest
+
+  The ``add_swift_xctest`` function creates a XCTest target named <test_target>
+  that will test the target <testee>, whose ``XCTestCase``s are declared in
+  <test_files>. <testee> can name an Application bundle target on macOS, but for
+  cross-platform CMake code it must be a library target.  If it is a shared
+  library, its ``FRAMEWORK`` property must be set to a true value::
+
+    add_swift_xctest(<test_target> <testee> <test_files>)
+
+  On non-Apple platforms, the resulting test will depend on the executable
+  target ``GenerateSwiftXCTestMain`` supplied by
+  https://github.com/hylo-lang/GenerateSwiftXCTestMain.
+
+Imported Targets
+^^^^^^^^^^^^^^^^
+
+This module provides the following imported targets, if found:
+
+``SwiftXCTest``
+  The SwiftXCTest library
+
+``XCTest``
+  The base XCTest library for use by Objective-C
+
+Result Variables
+^^^^^^^^^^^^^^^^
+
+On macOS, this module sets the same variables as the ``FindXCTest`` module,
+which see. On other platforms, it sets no variables.
+
+Cache Variables
+^^^^^^^^^^^^^^^
+
+On non-macOS platforms, this module sets no variables.  On macOS, this module
+sets the same cache variables as the ``FindXCTest`` module (which see), plus:
+
+.. variable:: APPLE_PLATFORM_DEVELOPER_DIRECTORY
+
+  The .../<Platform>.platform/Developer directory of Swift's target platform in
+  the current Swift toolchain.
+
+#]=======================================================================]
+
 include_guard(GLOBAL)
 find_package(XCTest QUIET)
 
