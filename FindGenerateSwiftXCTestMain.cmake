@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 include(./FetchHyloDependency)
 
 fetch_hylo_dependency(GenerateSwiftXCTestMain

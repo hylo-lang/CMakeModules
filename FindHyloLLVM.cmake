@@ -14,7 +14,7 @@ This module provides the same targets and variables (cache or
 otherwise) as your LLVM installation's LLVMConfig.cmake does.
 
 #]=======================================================================]
-
+include_guard(GLOBAL)
 
 # Boilerplate from https://llvm.org/docs/CMake.html#embedding-llvm-in-your-project
 find_package(LLVM 17.0 REQUIRED CONFIG)
