@@ -55,8 +55,15 @@ sets the same cache variables as the ``FindXCTest`` module (which see), plus:
 
 #]=======================================================================]
 
-include_guard(GLOBAL)
+# FindXCTest is an old-style find-module; instead of creating imported
+# targets, it sets variables like XCTest_FOUND in the current
+# CMakeList directory of the find_package invocation.  It contains
+# functions we need to call that will fatal error if XCTest_FOUND is not set.
+# Therefore we must unconditionally find XCTest from each directory where
+# SwiftXCTest is needed, and this must precede the include guard.
 find_package(XCTest QUIET)
+
+include_guard(GLOBAL)
 
 # Adds the XCTest target.
 function(_FindSwiftXCTest_add_XCTest)
@@ -69,7 +76,8 @@ function(_FindSwiftXCTest_add_XCTest)
   endif()
 endfunction()
 
-# Uses the Apple-only support in FindXCTest to create the XCTest library.
+# adds the XCTest library using the Apple-only support in CMake's
+# FindXCTest module.
 function(_FindSwiftXCTest_add_XCTest_apple)
   if(NOT XCTest_FOUND)
     message(FATAL_ERROR "XCTest is required, but was not found.")
@@ -232,8 +240,8 @@ function(add_swift_xctest test_target testee)
 
   if(APPLE)
   
-    if(NOT XCTest_FOUND)
-      message(FATAL_ERROR "XCTest is required, but was not found.")
+    if(NOT TARGET SwiftXCTest)
+      message(FATAL_ERROR "SwiftXCTest is required, but was not found.")
     endif()
     xctest_add_bundle(${test_target} ${testee} ${sources})
     target_link_libraries(${test_target} PRIVATE SwiftXCTest ${dependencies})
