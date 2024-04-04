@@ -1,0 +1,30 @@
+diff --git a/Sources/ArgumentParser/Parsing/CommandParser.swift b/Sources/ArgumentParser/Parsing/CommandParser.swift
+index bf6f328..4949e78 100644
+--- a/Sources/ArgumentParser/Parsing/CommandParser.swift
++++ b/Sources/ArgumentParser/Parsing/CommandParser.swift
+@@ -273,6 +273,9 @@ struct AutodetectedGenerateCompletions: ParsableCommand {
+   @Flag() var generateCompletionScript = false
+ }
+ 
++func swiftBug72841Unwrap<T>(_ x: T) -> T { x }
++func swiftBug72841Unwrap<T>(_ x: T?) -> T { x! }
++
+ extension CommandParser {
+   func checkForCompletionScriptRequest(_ split: inout SplitArguments) throws {
+     // Pseudo-commands don't support `--generate-completion-script` flag
+@@ -286,13 +289,13 @@ extension CommandParser {
+     // First look for `--generate-completion-script <shell>`
+     var completionsParser = CommandParser(GenerateCompletions.self)
+     if let result = try? completionsParser.parseCurrent(&split) as? GenerateCompletions {
+-      throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: result.generateCompletionScript))
++      throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: swiftBug72841Unwrap(result).generateCompletionScript))
+     }
+     
+     // Check for for `--generate-completion-script` without a value
+     var autodetectedParser = CommandParser(AutodetectedGenerateCompletions.self)
+     if let result = try? autodetectedParser.parseCurrent(&split) as? AutodetectedGenerateCompletions,
+-       result.generateCompletionScript
++       swiftBug72841Unwrap(result).generateCompletionScript
+     {
+       throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: nil))
+     }
