@@ -16,3 +16,70 @@ index e0e8058..6c7e971 100644
  
  include(CTest)
  include(SwiftSupport)
+diff --git a/Sources/ComplexModule/CMakeLists.txt b/Sources/ComplexModule/CMakeLists.txt
+index 91e3a17..f2d4a85 100644
+--- a/Sources/ComplexModule/CMakeLists.txt
++++ b/Sources/ComplexModule/CMakeLists.txt
+@@ -12,8 +12,6 @@ add_library(ComplexModule
+   Complex.swift
+   Differentiable.swift
+   ElementaryFunctions.swift)
+-set_target_properties(ComplexModule PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ target_link_libraries(ComplexModule PUBLIC
+   RealModule)
+ 
+diff --git a/Sources/Numerics/CMakeLists.txt b/Sources/Numerics/CMakeLists.txt
+index a4a219a..c41be31 100644
+--- a/Sources/Numerics/CMakeLists.txt
++++ b/Sources/Numerics/CMakeLists.txt
+@@ -9,8 +9,7 @@ See https://swift.org/LICENSE.txt for license information
+ 
+ add_library(Numerics
+   Numerics.swift)
+-set_target_properties(Numerics PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
++
+ # NOTE: generate the force load symbol to ensure that the import library is
+ # generated on Windows for autolinking.
+ target_compile_options(Numerics PUBLIC
+diff --git a/Sources/RealModule/CMakeLists.txt b/Sources/RealModule/CMakeLists.txt
+index c074dcf..59be0bd 100644
+--- a/Sources/RealModule/CMakeLists.txt
++++ b/Sources/RealModule/CMakeLists.txt
+@@ -18,8 +18,6 @@ add_library(RealModule
+   Float80+Real.swift
+   Real.swift
+   RealFunctions.swift)
+-set_target_properties(RealModule PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ target_link_libraries(RealModule PUBLIC
+   _NumericsShims)
+ 
+diff --git a/Sources/_TestSupport/CMakeLists.txt b/Sources/_TestSupport/CMakeLists.txt
+index 83b233f..621526e 100644
+--- a/Sources/_TestSupport/CMakeLists.txt
++++ b/Sources/_TestSupport/CMakeLists.txt
+@@ -11,8 +11,6 @@ add_library(_TestSupport
+   Error.swift
+   Interval.swift
+   RealTestSupport.swift)
+-set_target_properties(_TestSupport PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ target_link_libraries(_TestSupport PUBLIC
+   Numerics)
+ 
+diff --git a/Tests/ComplexTests/CMakeLists.txt b/Tests/ComplexTests/CMakeLists.txt
+index 43d83ab..9231c8c 100644
+--- a/Tests/ComplexTests/CMakeLists.txt
++++ b/Tests/ComplexTests/CMakeLists.txt
+@@ -13,8 +13,7 @@ add_library(ComplexTests
+   DifferentiableTests.swift
+   ElementaryFunctionTests.swift
+   PropertyTests.swift)
+-set_target_properties(ComplexTests PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
++
+ target_compile_options(ComplexTests PRIVATE
+   -enable-testing)
+ target_link_libraries(ComplexTests PUBLIC
