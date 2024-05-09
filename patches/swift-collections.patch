@@ -17,10 +17,10 @@ index 6661eea..c3e7fad 100644
  
  if(CMAKE_SYSTEM_NAME STREQUAL Windows OR CMAKE_SYSTEM_NAME STREQUAL Darwin)
 diff --git a/Sources/Collections/CMakeLists.txt b/Sources/Collections/CMakeLists.txt
-index aadba16..3ee3b40 100644
+index aadba16..a68085f 100644
 --- a/Sources/Collections/CMakeLists.txt
 +++ b/Sources/Collections/CMakeLists.txt
-@@ -12,8 +12,6 @@ add_library(Collections
+@@ -12,8 +12,20 @@ add_library(Collections
  target_link_libraries(Collections PRIVATE
    DequeModule
    OrderedCollections)
@@ -29,6 +29,20 @@ index aadba16..3ee3b40 100644
  
  _install_target(Collections)
  set_property(GLOBAL APPEND PROPERTY SWIFT_COLLECTIONS_EXPORTS Collections)
++
++# Makes <exported> importable by any target listing <exporter> in its
++# target_link_libraries.
++function(swift_module_re_exports exporter exported)
++  set(swift_module_directory "$<TARGET_PROPERTY:${exported},Swift_MODULE_DIRECTORY>")
++  set(binary_directory "$<TARGET_PROPERTY:${exported},BINARY_DIR>")
++  set_property(TARGET ${exporter}
++    APPEND
++    PROPERTY INTERFACE_INCLUDE_DIRECTORIES
++  "$<IF:$<STREQUAL:${swift_module_directory},>,${binary_directory},${swift_module_directory}>")
++endfunction()
++
++swift_module_re_exports(Collections DequeModule)
++swift_module_re_exports(Collections OrderedCollections)
 diff --git a/Sources/DequeModule/CMakeLists.txt b/Sources/DequeModule/CMakeLists.txt
 index 2006b24..e697c48 100644
 --- a/Sources/DequeModule/CMakeLists.txt
