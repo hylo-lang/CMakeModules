@@ -1,5 +1,41 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 25282eb..6259e2d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,17 +11,6 @@ option(BUILD_SHARED_LIBS "Build shared libraries by default" YES)
+ include(CTest)
+ include(SwiftSupport)
+ 
+-if(CMAKE_VERSION VERSION_LESS 3.16 AND CMAKE_SYSTEM_NAME STREQUAL Windows)
+-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+-else()
+-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+-endif()
+-
+-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+-set(CMAKE_Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift)
+-
+ find_package(dispatch CONFIG)
+ find_package(Foundation CONFIG)
+ find_package(XCTest CONFIG)
+diff --git a/Sources/ArgumentParser/CMakeLists.txt b/Sources/ArgumentParser/CMakeLists.txt
+index 557873c..558cfa5 100644
+--- a/Sources/ArgumentParser/CMakeLists.txt
++++ b/Sources/ArgumentParser/CMakeLists.txt
+@@ -45,9 +45,6 @@ add_library(ArgumentParser
+   Utilities/SequenceExtensions.swift
+   Utilities/StringExtensions.swift
+   Utilities/Tree.swift)
+-# NOTE: workaround for CMake not setting up include flags yet
+-set_target_properties(ArgumentParser PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ target_compile_options(ArgumentParser PRIVATE
+   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
+ target_link_libraries(ArgumentParser PRIVATE
 diff --git a/Sources/ArgumentParser/Parsing/CommandParser.swift b/Sources/ArgumentParser/Parsing/CommandParser.swift
-index bf6f328..4949e78 100644
+index 4aec2ab..88d85a3 100644
 --- a/Sources/ArgumentParser/Parsing/CommandParser.swift
 +++ b/Sources/ArgumentParser/Parsing/CommandParser.swift
 @@ -273,6 +273,9 @@ struct AutodetectedGenerateCompletions: ParsableCommand {
@@ -28,3 +64,29 @@ index bf6f328..4949e78 100644
      {
        throw CommandError(commandStack: commandStack, parserError: .completionScriptRequested(shell: nil))
      }
+diff --git a/Sources/ArgumentParserTestHelpers/CMakeLists.txt b/Sources/ArgumentParserTestHelpers/CMakeLists.txt
+index 3d862f7..47e2378 100644
+--- a/Sources/ArgumentParserTestHelpers/CMakeLists.txt
++++ b/Sources/ArgumentParserTestHelpers/CMakeLists.txt
+@@ -1,8 +1,6 @@
+ add_library(ArgumentParserTestHelpers
+   StringHelpers.swift
+   TestHelpers.swift)
+-set_target_properties(ArgumentParserTestHelpers PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ target_link_libraries(ArgumentParserTestHelpers PUBLIC
+   ArgumentParser
+   ArgumentParserToolInfo
+diff --git a/Sources/ArgumentParserToolInfo/CMakeLists.txt b/Sources/ArgumentParserToolInfo/CMakeLists.txt
+index b82adb7..cd707e5 100644
+--- a/Sources/ArgumentParserToolInfo/CMakeLists.txt
++++ b/Sources/ArgumentParserToolInfo/CMakeLists.txt
+@@ -1,8 +1,5 @@
+ add_library(ArgumentParserToolInfo STATIC
+   ToolInfo.swift)
+-# NOTE: workaround for CMake not setting up include flags yet
+-set_target_properties(ArgumentParserToolInfo PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ target_compile_options(ArgumentParserToolInfo PRIVATE
+   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
+ 

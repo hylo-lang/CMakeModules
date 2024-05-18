@@ -1,0 +1,71 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6661eea..c3e7fad 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -17,13 +17,8 @@ project(SwiftCollections
+ 
+ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+ 
+-set(CMAKE_Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift)
+ set(CMAKE_Swift_COMPILE_OPTIONS_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
+ 
+-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+-
+ set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
+ 
+ if(CMAKE_SYSTEM_NAME STREQUAL Windows OR CMAKE_SYSTEM_NAME STREQUAL Darwin)
+diff --git a/Sources/Collections/CMakeLists.txt b/Sources/Collections/CMakeLists.txt
+index aadba16..a68085f 100644
+--- a/Sources/Collections/CMakeLists.txt
++++ b/Sources/Collections/CMakeLists.txt
+@@ -12,8 +12,20 @@ add_library(Collections
+ target_link_libraries(Collections PRIVATE
+   DequeModule
+   OrderedCollections)
+-set_target_properties(Collections PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ 
+ _install_target(Collections)
+ set_property(GLOBAL APPEND PROPERTY SWIFT_COLLECTIONS_EXPORTS Collections)
++
++# Makes <exported> importable by any target listing <exporter> in its
++# target_link_libraries.
++function(swift_module_re_exports exporter exported)
++  set(swift_module_directory "$<TARGET_PROPERTY:${exported},Swift_MODULE_DIRECTORY>")
++  set(binary_directory "$<TARGET_PROPERTY:${exported},BINARY_DIR>")
++  set_property(TARGET ${exporter}
++    APPEND
++    PROPERTY INTERFACE_INCLUDE_DIRECTORIES
++  "$<IF:$<STREQUAL:${swift_module_directory},>,${binary_directory},${swift_module_directory}>")
++endfunction()
++
++swift_module_re_exports(Collections DequeModule)
++swift_module_re_exports(Collections OrderedCollections)
+diff --git a/Sources/DequeModule/CMakeLists.txt b/Sources/DequeModule/CMakeLists.txt
+index 2006b24..e697c48 100644
+--- a/Sources/DequeModule/CMakeLists.txt
++++ b/Sources/DequeModule/CMakeLists.txt
+@@ -28,8 +28,6 @@ add_library(DequeModule
+   Deque+Sendable.swift
+   Deque+Testing.swift
+   UnsafeMutableBufferPointer+Utilities.swift)
+-set_target_properties(DequeModule PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ 
+ _install_target(DequeModule)
+ set_property(GLOBAL APPEND PROPERTY SWIFT_COLLECTIONS_EXPORTS DequeModule)
+diff --git a/Sources/OrderedCollections/CMakeLists.txt b/Sources/OrderedCollections/CMakeLists.txt
+index 2c0cf8e..c61b11d 100644
+--- a/Sources/OrderedCollections/CMakeLists.txt
++++ b/Sources/OrderedCollections/CMakeLists.txt
+@@ -63,8 +63,6 @@ add_library(OrderedCollections
+ 
+   "Utilities/_UnsafeBitset.swift"
+   "Utilities/RandomAccessCollection+Offsets.swift")
+-set_target_properties(OrderedCollections PROPERTIES
+-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ 
+ _install_target(OrderedCollections)
+ set_property(GLOBAL APPEND PROPERTY SWIFT_COLLECTIONS_EXPORTS OrderedCollections)
