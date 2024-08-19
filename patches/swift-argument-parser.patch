@@ -21,10 +21,10 @@ index 25282eb..6259e2d 100644
  find_package(Foundation CONFIG)
  find_package(XCTest CONFIG)
 diff --git a/Sources/ArgumentParser/CMakeLists.txt b/Sources/ArgumentParser/CMakeLists.txt
-index 557873c..558cfa5 100644
+index 557873c..e5f4cf6 100644
 --- a/Sources/ArgumentParser/CMakeLists.txt
 +++ b/Sources/ArgumentParser/CMakeLists.txt
-@@ -45,9 +45,6 @@ add_library(ArgumentParser
+@@ -45,11 +45,8 @@ add_library(ArgumentParser
    Utilities/SequenceExtensions.swift
    Utilities/StringExtensions.swift
    Utilities/Tree.swift)
@@ -32,8 +32,11 @@ index 557873c..558cfa5 100644
 -set_target_properties(ArgumentParser PROPERTIES
 -  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
  target_compile_options(ArgumentParser PRIVATE
-   $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
+-  $<$<BOOL:${BUILD_TESTING}>:-enable-testing>)
++  $<$<BOOL:${BUILD_TESTING}>:-enable-testing> -enable-library-evolution)
  target_link_libraries(ArgumentParser PRIVATE
+   $<$<NOT:$<PLATFORM_ID:Darwin>>:Foundation>
+   ArgumentParserToolInfo)
 diff --git a/Sources/ArgumentParser/Parsing/CommandParser.swift b/Sources/ArgumentParser/Parsing/CommandParser.swift
 index 4aec2ab..88d85a3 100644
 --- a/Sources/ArgumentParser/Parsing/CommandParser.swift
