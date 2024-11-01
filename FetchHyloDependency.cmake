@@ -10,7 +10,8 @@ macro(fetch_hylo_dependency)
   endblock()
 
   # Not using block() here because FetchContent_MakeAvailable typically causes dependency-specific
-  # global variables to be set, and I'm not sure to what extent they may be needed
+  # variables (see the docs for find_package) to be set, some of which may PARENT_SCOPE. I'm not
+  # sure to what extent they may be needed.
   if(YES)
     set(saved_BUILD_EXAMPLES ${BUILD_EXAMPLES})
     set(saved_BUILD_TESTING ${BUILD_TESTING})
