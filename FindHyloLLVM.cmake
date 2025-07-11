@@ -17,7 +17,7 @@ otherwise) as your LLVM installation's LLVMConfig.cmake does.
 include_guard(GLOBAL)
 
 # Boilerplate from https://llvm.org/docs/CMake.html#embedding-llvm-in-your-project
-find_package(LLVM 17.0 REQUIRED CONFIG)
+find_package(LLVM 20.1 REQUIRED CONFIG)
 include_directories(${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
