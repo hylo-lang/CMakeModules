@@ -6,6 +6,5 @@ set(patch_swift_numerics
 
 fetch_hylo_dependency(SwiftNumerics
   GIT_REPOSITORY https://github.com/apple/swift-numerics.git
-  PATCH_COMMAND ${patch_swift_numerics}
   GIT_TAG        1.0.3
 )
