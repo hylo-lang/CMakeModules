@@ -1,39 +1,31 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e0e8058..6c7e971 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -11,12 +11,7 @@ cmake_minimum_required(VERSION 3.16)
- project(swift-numerics
-   LANGUAGES Swift)
- 
--list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
--
--set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
--set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
--set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
--set(CMAKE_Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift)
-+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
- 
- include(CTest)
- include(SwiftSupport)
+Subject: [PATCH] Remove questionable CMake config
+---
+Index: Sources/ComplexModule/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/Sources/ComplexModule/CMakeLists.txt b/Sources/ComplexModule/CMakeLists.txt
-index 91e3a17..f2d4a85 100644
---- a/Sources/ComplexModule/CMakeLists.txt
-+++ b/Sources/ComplexModule/CMakeLists.txt
-@@ -12,8 +12,6 @@ add_library(ComplexModule
-   Complex.swift
-   Differentiable.swift
-   ElementaryFunctions.swift)
+--- a/Sources/ComplexModule/CMakeLists.txt	(revision 8c4747f116cb49ea83a2fec954f9668547fdf1cc)
++++ b/Sources/ComplexModule/CMakeLists.txt	(revision 7675331540c9b0260e4638b73440c326ea9ca8c8)
+@@ -19,8 +19,6 @@
+   Complex+StringConvertible.swift
+   Polar.swift
+   Scale.swift)
 -set_target_properties(ComplexModule PROPERTIES
 -  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
  target_link_libraries(ComplexModule PUBLIC
    RealModule)
  
+Index: Sources/Numerics/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/Sources/Numerics/CMakeLists.txt b/Sources/Numerics/CMakeLists.txt
-index a4a219a..c41be31 100644
---- a/Sources/Numerics/CMakeLists.txt
-+++ b/Sources/Numerics/CMakeLists.txt
-@@ -9,8 +9,7 @@ See https://swift.org/LICENSE.txt for license information
+--- a/Sources/Numerics/CMakeLists.txt	(revision 8c4747f116cb49ea83a2fec954f9668547fdf1cc)
++++ b/Sources/Numerics/CMakeLists.txt	(revision 7675331540c9b0260e4638b73440c326ea9ca8c8)
+@@ -9,8 +9,7 @@
  
  add_library(Numerics
    Numerics.swift)
@@ -43,24 +35,32 @@ index a4a219a..c41be31 100644
  # NOTE: generate the force load symbol to ensure that the import library is
  # generated on Windows for autolinking.
  target_compile_options(Numerics PUBLIC
+Index: Sources/RealModule/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/Sources/RealModule/CMakeLists.txt b/Sources/RealModule/CMakeLists.txt
-index c074dcf..59be0bd 100644
---- a/Sources/RealModule/CMakeLists.txt
-+++ b/Sources/RealModule/CMakeLists.txt
-@@ -18,8 +18,6 @@ add_library(RealModule
-   Float80+Real.swift
+--- a/Sources/RealModule/CMakeLists.txt	(revision 8c4747f116cb49ea83a2fec954f9668547fdf1cc)
++++ b/Sources/RealModule/CMakeLists.txt	(revision 7675331540c9b0260e4638b73440c326ea9ca8c8)
+@@ -19,8 +19,6 @@
    Real.swift
-   RealFunctions.swift)
+   RealFunctions.swift
+   RelaxedArithmetic.swift)
 -set_target_properties(RealModule PROPERTIES
 -  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
  target_link_libraries(RealModule PUBLIC
    _NumericsShims)
  
+Index: Sources/_TestSupport/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/Sources/_TestSupport/CMakeLists.txt b/Sources/_TestSupport/CMakeLists.txt
-index 83b233f..621526e 100644
---- a/Sources/_TestSupport/CMakeLists.txt
-+++ b/Sources/_TestSupport/CMakeLists.txt
-@@ -11,8 +11,6 @@ add_library(_TestSupport
+--- a/Sources/_TestSupport/CMakeLists.txt	(revision 8c4747f116cb49ea83a2fec954f9668547fdf1cc)
++++ b/Sources/_TestSupport/CMakeLists.txt	(revision 7675331540c9b0260e4638b73440c326ea9ca8c8)
+@@ -13,8 +13,6 @@
    Error.swift
    Interval.swift
    RealTestSupport.swift)
@@ -69,12 +69,16 @@ index 83b233f..621526e 100644
  target_link_libraries(_TestSupport PUBLIC
    Numerics)
  
+Index: Tests/ComplexTests/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/Tests/ComplexTests/CMakeLists.txt b/Tests/ComplexTests/CMakeLists.txt
-index 43d83ab..9231c8c 100644
---- a/Tests/ComplexTests/CMakeLists.txt
-+++ b/Tests/ComplexTests/CMakeLists.txt
-@@ -13,8 +13,7 @@ add_library(ComplexTests
-   DifferentiableTests.swift
+--- a/Tests/ComplexTests/CMakeLists.txt	(revision 8c4747f116cb49ea83a2fec954f9668547fdf1cc)
++++ b/Tests/ComplexTests/CMakeLists.txt	(revision 7675331540c9b0260e4638b73440c326ea9ca8c8)
+@@ -12,8 +12,7 @@
+   ArithmeticTests.swift
    ElementaryFunctionTests.swift
    PropertyTests.swift)
 -set_target_properties(ComplexTests PROPERTIES
