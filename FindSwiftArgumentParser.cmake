@@ -12,8 +12,6 @@ set(patch_swift_argument_parser
   ${CMAKE_CURRENT_LIST_DIR}/patches/swift-argument-parser.patch)
 
 fetch_hylo_dependency(SwiftArgumentParser
-  GIT_REPOSITORY https://github.com/apple/swift-argument-parser.git
-  GIT_TAG        1.3.0
-  # Workaround for https://github.com/apple/swift/issues/72841
-  PATCH_COMMAND  ${patch_swift_argument_parser}
+  GIT_REPOSITORY https://github.com/tothambrus11/swift-argument-parser
+  GIT_TAG        ec6de6b76437a2558f43eee670def20f03b82f5f
 )
