@@ -12,6 +12,6 @@ set(patch_swift_argument_parser
   ${CMAKE_CURRENT_LIST_DIR}/patches/swift-argument-parser.patch)
 
 fetch_hylo_dependency(SwiftArgumentParser
-  GIT_REPOSITORY https://github.com/tothambrus11/swift-argument-parser
-  GIT_TAG        ec6de6b76437a2558f43eee670def20f03b82f5f
+  GIT_REPOSITORY https://github.com/hylo-lang/swift-argument-parser
+  GIT_TAG        6c357bcfeff444f3d5fa3711bf495814648b8bdb
 )
