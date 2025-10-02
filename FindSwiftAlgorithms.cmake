@@ -1,4 +1,3 @@
-find_package(SwiftNumerics)
 include(./FetchHyloDependency)
 
 fetch_hylo_dependency(SwiftAlgorithms
