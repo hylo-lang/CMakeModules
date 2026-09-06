@@ -1,10 +1,10 @@
 include(./FetchHyloDependency)
 
 # swift-syntax places its modules in the `<name>.swiftmodule/<triple>.swiftmodule` layout by passing
-# `-emit-module-path` itself. Since CMake 4.4.3, CMake no longer notices that flag and emits a flat
+# `-emit-module-path`. Since CMake 4.4.3, CMake no longer notices that flag and emits a
 # `<name>.swiftmodule` file that shadows the directory, unless CMP0195 makes CMake use the same
-# layout. swift-syntax's own `cmake_minimum_required` is too old to enable the policy, so we set the
-# default for it here. Newer swift-syntax versions do this themselves (apple/swift-syntax@a71ab65).
+# layout. Newer swift-syntax versions do this themselves (apple/swift-syntax@a71ab65), so we can 
+# remove this once they are released and our Swift compiler version is bumped.
 set(CMAKE_POLICY_DEFAULT_CMP0195 NEW)
 fetch_hylo_dependency(SwiftSyntax
   GIT_REPOSITORY https://github.com/apple/swift-syntax.git
